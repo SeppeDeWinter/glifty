@@ -4,14 +4,6 @@ A Python library for quick conversion of genomic coordinates between assemblies.
 
 ## Install
 
-**PyPi**
-
-```bash
-
-$ pip install glifty
-
-```
-
 **From Source**
 
 Using [poetry](https://python-poetry.org/)
