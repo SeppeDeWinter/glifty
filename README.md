@@ -49,7 +49,7 @@ $ poetry install
 >>> al = get_aligment(
         cf, 
         "chr2", 25_383_722, 25_383_722 + 1_000,
-        hg19.fa, panTro3.fa
+        "hg19.fa", "panTro3.fa"
     )
 >>> pretty_print_alignment(*next(al))
 source:	CTGTTATTTGACGGCTACGTATTTTTACTTTATTCACACAGTTTACATTC
