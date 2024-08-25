@@ -8,7 +8,7 @@ A Python library for quick conversion of genomic coordinates between assemblies.
 
 ```bash
 
-$ git clone https://github.com/SeppeDeWinter/gliftly.git
+$ git clone https://github.com/SeppeDeWinter/glifty.git
 $ cd glifty
 $ pip install .
 
