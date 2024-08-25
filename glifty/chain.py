@@ -2,7 +2,8 @@ from ncls import NCLS
 import gzip
 import io
 from dataclasses import dataclass
-from typing import Self, Iterator
+from typing import Iterator
+from typing_extensions import Self
 from tqdm import tqdm
 
 @dataclass
@@ -73,7 +74,7 @@ class Chain:
         self,
         header: ChainHeader,
         file: gzip.GzipFile | io.TextIOWrapper,
-        show_progress: bool = True
+        show_progress: bool = False
     ):
         self.header = header
         fields = self._readline(file).split()
