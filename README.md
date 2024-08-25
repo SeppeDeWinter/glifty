@@ -18,7 +18,7 @@ Using [poetry](https://python-poetry.org/)
 
 ```bash
 
-$ git pull https://github.com/SeppeDeWinter/glifty.git
+$ git clone https://github.com/SeppeDeWinter/glifty.git
 $ cd glifty
 $ poetry install
 
