@@ -151,14 +151,6 @@ class Chain:
                 t_end = t_end - (s_end - end)
                 s_end = end
 
-            # if coordinates are on negative strand, count from the end of the chromosome
-            if self.header.sStrand == "-":
-                s_end = self.header.sSize - s_start
-                s_start = self.header.sSize - s_end
-            if self.header.tStrand == "-":
-                t_end = self.header.tSize - t_start
-                t_start = self.header.tSize - t_end
-
             yield (
                 self.header.tName, 
                 (
