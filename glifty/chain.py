@@ -194,7 +194,7 @@ class ChainFile:
                 chains[(header.sName, header.sStrand)] = [Chain(header, file)]
             _ = file.readline() # there is an empty line after each chain
             header_line = file.readline()
-        return cls(chains = chains, filename)
+        return cls(chains = chains, filename = filename)
 
     def query(
         self, chrom:str, start: int, end: int, strand: str = "+"
