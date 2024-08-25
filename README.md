@@ -18,7 +18,7 @@ Using [poetry](https://python-poetry.org/)
 
 ```bash
 
-$ git clone https://github.com/SeppeDeWinter/glifty.git
+$ git pull https://github.com/seppedewinter/gliftly.git
 $ cd glifty
 $ poetry install
 
@@ -36,6 +36,85 @@ $ poetry install
 >>> lo = liftover(cf, "chr2", 25_383_722, 25_391_559)
 >>> next(lo)
 ('chr2A', 25494472, 25502382, '+')
+
+```
+
+**Get aligned sequences across assemblies:**
+
+```python
+
+>>> from glifty.chain import ChainFile
+>>> from glifty.tools import get_aligment, pretty_print_alignment
+>>> cf = ChainFile.load_chain_file("hg19ToPanTro3.over.chain.gz")
+>>> al = get_aligment(
+        cf, 
+        "chr2", 25_383_722, 25_383_722 + 1_000,
+        hg19.fa, panTro3.fa
+    )
+>>> pretty_print_alignment(*next(al))
+source:	CTGTTATTTGACGGCTACGTATTTTTACTTTATTCACACAGTTTACATTC
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	CTGTTATTTGACGGCTACGTATTTTTACTTTATTCACACAGTTTACATTC
+source:	AAAGTCAGAGGTGGATGTGAAATTTGAAAGGTTTTATTTCCTAACTACAG
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	AAAGTCAGAGGTGGATGTGAAATTTGAAAGGTTTTATTTCCTAACTACAG
+source:	GCAGCTTTAAGAGGCTGATTATCTGCCACGACCCCCCAGGCTGGGAGGCG
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	GCAGCTTTAAGAGGCTGATTATCTGCCACGACCCCCCAGGCTGGGAGGCG
+source:	GCAGCAGGGCAGGGGAGAGCAAGGGGCTTTGGGGTCGACCTCCTGGGGGA
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	GCAGCAGGGCAGGGGAGAGCAAGGGGCTTTGGGGTCGACCTCCTGGGGGA
+source:	GGGTAGCCCTGGGGCCCCGCTGTGCCCTCACTCGCCCTTCTTGTAGGCGT
+        |||||||||*|||||||*||||||||||||||||||||||||||||||||
+target:	GGGTAGCCCCGGGGCCCGGCTGTGCCCTCACTCGCCCTTCTTGTAGGCGT
+source:	TCTTGATGATGGCGTTTTTGAACAGCGTCACCAGGGGCGTCTGGCTCTTC
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	TCTTGATGATGGCGTTTTTGAACAGCGTCACCAGGGGCGTCTGGCTCTTC
+source:	TCGGAGGTCATGAAACCGCCGTAGCGCTTGTCCTTGGGCGGGCTGCCCCA
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	TCGGAGGTCATGAAACCGCCGTAGCGCTTGTCCTTGGGCGGGCTGCCCCA
+source:	GCGGAAGTGCTCCATCCTGTAGGGGCCCTCGTCCTTCTTCTCGGCCGCCA
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	GCGGAAGTGCTCCATCCTGTAGGGGCCCTCGTCCTTCTTCTCGGCCGCCA
+source:	CCAGCAGGCTGTGCTCCAGGTCGGCCTGGGCCCCTGCGCCGTCATCGGCA
+        ||||||||||||||||||||||||||||||||||*|||||||||||||||
+target:	CCAGCAGGCTGTGCTCCAGGTCGGCCTGGGCCCCGGCGCCGTCATCGGCA
+source:	GGGCCGTCGGGGCCATCTCCCTCCCGGAGTCGCTGGCCAGTCAGCTCCCT
+        |||||||||||||||||||||||||||*||||||||||||||||||||||
+target:	GGGCCGTCGGGGCCATCTCCCTCCCGGGGTCGCTGGCCAGTCAGCTCCCT
+source:	CTTGAACTCCAGGGGGAAGGCCTCGGCCGACTCGTCCTCGGCGCCGTTAG
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	CTTGAACTCCAGGGGGAAGGCCTCGGCCGACTCGTCCTCGGCGCCGTTAG
+source:	GGTACACCTTCACTGGGCGCCGCTTCTTGCCCACCGGCTTGCCCCAGCGG
+        |||||||||||||*||||||||||||||||||||||||||||||||||||
+target:	GGTACACCTTCACCGGGCGCCGCTTCTTGCCCACCGGCTTGCCCCAGCGG
+source:	AAGTGCTCCATGGAGTAGGAGCGCTTGCCCTCGCGCGGGCCCGGCTTGGC
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	AAGTGCTCCATGGAGTAGGAGCGCTTGCCCTCGCGCGGGCCCGGCTTGGC
+source:	ACCATCGCTGCGGGGCTCGGGGCCGCCCTCAGGCAGCGGGCCGCAGTCTT
+        ||||||||||||||||||||||||||||||||||||||||||||*|||||
+target:	ACCATCGCTGCGGGGCTCGGGGCCGCCCTCAGGCAGCGGGCCGCGGTCTT
+source:	CGCCCGCTGAGACGTCCTCGCGCTTCTGCCCTGCgccgctgc---tgccg
+        ||||||||||||||||||||||||||||||||||||||||||   |||*|
+target:	CGCCCGCTGAGACGTCCTCGCGCTTCTGCCCTGCgccgctgccgctgctg
+source:	ctgctgctgctgttgcGGCGGCCGAATCGGTCCCAGCGGAAGTGGCCCAT
+        ||||||||||||||||||||||||||||||||||||||||||||||||||
+target:	ctgctgctgctgttgcGGCGGCCGAATCGGTCCCAGCGGAAGTGGCCCAT
+source:	GACGTACTTCCGGGGGTTCTCGGTCAGAGGCTGCTCGTCGCCATTTCCCG
+        |||||||||||||||||||||||||||||||||||||||||||||*||||
+target:	GACGTACTTCCGGGGGTTCTCGGTCAGAGGCTGCTCGTCGCCATTGCCCG
+source:	GGAACATGGGAGTCTCGGCCGAGAGGTCGGGCTTGCAGGCCCGGATGCAC
+        |||||||||||||||||||*||||||||||||||||||||||||||||||
+target:	GGAACATGGGAGTCTCGGCGGAGAGGTCGGGCTTGCAGGCCCGGATGCAC
+source:	TCCTGGGGGAAGACGCGAGGGCATGAGGGCAGCCCGTGCCCCGCACCCCG
+        |||||||||||||||||||||||||||||||||||||||||*||||||||
+target:	TCCTGGGGGAAGACGCGAGGGCATGAGGGCAGCCCGTGCCCTGCACCCCG
+source:	GCCCGGCTGCCGCGCCCGTCACTGCGCCTAGGCCCTGGCCGCCCT-----
+        |||||||||||||||||||||||||||||||||||||||||||||
+target:	GCCCGGCTGCCGCGCCCGTCACTGCGCCTAGGCCCTGGCCGCCCTGGCCG
+source:	----CGCCACGT
+            ||||||||
+target:	CCCTCGCCACGT
 
 ```
 
