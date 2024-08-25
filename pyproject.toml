@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "glifty"
+version = "0.1.0"
+description = ""
+authors = ["SeppeDeWinter <seppe.dewinter@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+ncls = "^0.0.68"
+pysam = "^0.22.1"
+tqdm = "^4.66.5"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.11.1"
+ruff = "^0.6.2"
+pytest = "^8.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
