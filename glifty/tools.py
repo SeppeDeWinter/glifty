@@ -90,6 +90,21 @@ def _get_sequence(
         raise ValueError(f"Invalid strand: {strand}")
     return seq
 
+def pretty_print_alignment(source: str, target: str, width = 50):
+    for i in range(0, max(len(source), len(target)), width):
+        print(f"source:\t{source[i:i+width]}")
+        print( "       \t", end = "")
+        for s, t in zip(source[i:i+width], target[i:i+width]):
+            if s == GAP_CHAR or t == GAP_CHAR:
+                print(" ", end = "")
+            elif s == t:
+                print("|", end = "")
+            else:
+                print("*", end = "")
+        print()
+        print(f"target:\t{target[i:i+width]}")
+        print()
+
 def get_alignment(
         chain_file: ChainFile,
         chromosome: str,
@@ -127,14 +142,77 @@ def get_alignment(
     Example
     -------
     >>> from glifty.chain import ChainFile
-    >>> from glifty.tools import get_aligment
+    >>> from glifty.tools import get_aligment, pretty_print_alignment
     >>> cf = ChainFile.load_chain_file("hg19ToPanTro3.over.chain.gz")
     >>> al = get_aligment(
             cf, 
-            "chr2", 25_383_722, 25_391_559,
+            "chr2", 25_383_722, 25_383_722 + 1_000,
             hg19.fa, panTro3.fa
         )
-    >>> # TODO
+    >>> pretty_print_alignment(*next(al))
+    source:	CTGTTATTTGACGGCTACGTATTTTTACTTTATTCACACAGTTTACATTC
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	CTGTTATTTGACGGCTACGTATTTTTACTTTATTCACACAGTTTACATTC
+    source:	AAAGTCAGAGGTGGATGTGAAATTTGAAAGGTTTTATTTCCTAACTACAG
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	AAAGTCAGAGGTGGATGTGAAATTTGAAAGGTTTTATTTCCTAACTACAG
+    source:	GCAGCTTTAAGAGGCTGATTATCTGCCACGACCCCCCAGGCTGGGAGGCG
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	GCAGCTTTAAGAGGCTGATTATCTGCCACGACCCCCCAGGCTGGGAGGCG
+    source:	GCAGCAGGGCAGGGGAGAGCAAGGGGCTTTGGGGTCGACCTCCTGGGGGA
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	GCAGCAGGGCAGGGGAGAGCAAGGGGCTTTGGGGTCGACCTCCTGGGGGA
+    source:	GGGTAGCCCTGGGGCCCCGCTGTGCCCTCACTCGCCCTTCTTGTAGGCGT
+            |||||||||*|||||||*||||||||||||||||||||||||||||||||
+    target:	GGGTAGCCCCGGGGCCCGGCTGTGCCCTCACTCGCCCTTCTTGTAGGCGT
+    source:	TCTTGATGATGGCGTTTTTGAACAGCGTCACCAGGGGCGTCTGGCTCTTC
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	TCTTGATGATGGCGTTTTTGAACAGCGTCACCAGGGGCGTCTGGCTCTTC
+    source:	TCGGAGGTCATGAAACCGCCGTAGCGCTTGTCCTTGGGCGGGCTGCCCCA
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	TCGGAGGTCATGAAACCGCCGTAGCGCTTGTCCTTGGGCGGGCTGCCCCA
+    source:	GCGGAAGTGCTCCATCCTGTAGGGGCCCTCGTCCTTCTTCTCGGCCGCCA
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	GCGGAAGTGCTCCATCCTGTAGGGGCCCTCGTCCTTCTTCTCGGCCGCCA
+    source:	CCAGCAGGCTGTGCTCCAGGTCGGCCTGGGCCCCTGCGCCGTCATCGGCA
+            ||||||||||||||||||||||||||||||||||*|||||||||||||||
+    target:	CCAGCAGGCTGTGCTCCAGGTCGGCCTGGGCCCCGGCGCCGTCATCGGCA
+    source:	GGGCCGTCGGGGCCATCTCCCTCCCGGAGTCGCTGGCCAGTCAGCTCCCT
+            |||||||||||||||||||||||||||*||||||||||||||||||||||
+    target:	GGGCCGTCGGGGCCATCTCCCTCCCGGGGTCGCTGGCCAGTCAGCTCCCT
+    source:	CTTGAACTCCAGGGGGAAGGCCTCGGCCGACTCGTCCTCGGCGCCGTTAG
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	CTTGAACTCCAGGGGGAAGGCCTCGGCCGACTCGTCCTCGGCGCCGTTAG
+    source:	GGTACACCTTCACTGGGCGCCGCTTCTTGCCCACCGGCTTGCCCCAGCGG
+            |||||||||||||*||||||||||||||||||||||||||||||||||||
+    target:	GGTACACCTTCACCGGGCGCCGCTTCTTGCCCACCGGCTTGCCCCAGCGG
+    source:	AAGTGCTCCATGGAGTAGGAGCGCTTGCCCTCGCGCGGGCCCGGCTTGGC
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	AAGTGCTCCATGGAGTAGGAGCGCTTGCCCTCGCGCGGGCCCGGCTTGGC
+    source:	ACCATCGCTGCGGGGCTCGGGGCCGCCCTCAGGCAGCGGGCCGCAGTCTT
+            ||||||||||||||||||||||||||||||||||||||||||||*|||||
+    target:	ACCATCGCTGCGGGGCTCGGGGCCGCCCTCAGGCAGCGGGCCGCGGTCTT
+    source:	CGCCCGCTGAGACGTCCTCGCGCTTCTGCCCTGCgccgctgc---tgccg
+            ||||||||||||||||||||||||||||||||||||||||||   |||*|
+    target:	CGCCCGCTGAGACGTCCTCGCGCTTCTGCCCTGCgccgctgccgctgctg
+    source:	ctgctgctgctgttgcGGCGGCCGAATCGGTCCCAGCGGAAGTGGCCCAT
+            ||||||||||||||||||||||||||||||||||||||||||||||||||
+    target:	ctgctgctgctgttgcGGCGGCCGAATCGGTCCCAGCGGAAGTGGCCCAT
+    source:	GACGTACTTCCGGGGGTTCTCGGTCAGAGGCTGCTCGTCGCCATTTCCCG
+            |||||||||||||||||||||||||||||||||||||||||||||*||||
+    target:	GACGTACTTCCGGGGGTTCTCGGTCAGAGGCTGCTCGTCGCCATTGCCCG
+    source:	GGAACATGGGAGTCTCGGCCGAGAGGTCGGGCTTGCAGGCCCGGATGCAC
+            |||||||||||||||||||*||||||||||||||||||||||||||||||
+    target:	GGAACATGGGAGTCTCGGCGGAGAGGTCGGGCTTGCAGGCCCGGATGCAC
+    source:	TCCTGGGGGAAGACGCGAGGGCATGAGGGCAGCCCGTGCCCCGCACCCCG
+            |||||||||||||||||||||||||||||||||||||||||*||||||||
+    target:	TCCTGGGGGAAGACGCGAGGGCATGAGGGCAGCCCGTGCCCTGCACCCCG
+    source:	GCCCGGCTGCCGCGCCCGTCACTGCGCCTAGGCCCTGGCCGCCCT-----
+            |||||||||||||||||||||||||||||||||||||||||||||
+    target:	GCCCGGCTGCCGCGCCCGTCACTGCGCCTAGGCCCTGGCCGCCCTGGCCG
+    source:	----CGCCACGT
+                ||||||||
+    target:	CCCTCGCCACGT
     """
     results = chain_file.query(
         chrom = chromosome,
@@ -196,6 +274,10 @@ def get_alignment(
             ]
             s_end_prev = s_end
             t_end_prev = t_end
+
+        assert source_seq_aligned.replace(GAP_CHAR, "") == source_seq, "Aligned sequence does not macth source sequence..."
+
+        assert target_seq_aligned.replace(GAP_CHAR, "") == target_seq, "Aligned sequence does not macth target sequence..."
 
         yield (source_seq_aligned, target_seq_aligned)
 
