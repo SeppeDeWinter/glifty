@@ -6,13 +6,11 @@ A Python library for quick conversion of genomic coordinates between assemblies.
 
 **From Source**
 
-Using [poetry](https://python-poetry.org/)
-
 ```bash
 
 $ git pull https://github.com/seppedewinter/gliftly.git
 $ cd glifty
-$ poetry install
+$ pip install .
 
 ```
 
