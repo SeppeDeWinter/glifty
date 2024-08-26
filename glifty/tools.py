@@ -53,8 +53,6 @@ def liftover(
     for result in results:
         t_chrom, ((s_start, _, s_strand), (t_start, _, t_strand)) = result[0]
         _, ((_, s_end, _), (_, t_end, _)) = result[-1]
-        if s_start != start or s_end != end or s_strand != strand:
-            raise ValueError("Chainfile was not parsed correctly!")
         yield (t_chrom, t_start, t_end, t_strand)
 
 def _reverse_complement(seq: str) -> str:
