@@ -1,8 +1,9 @@
 from glifty.chain import ChainFile
 
-from typing import Iterator
+from typing import Iterator, Sequence, Any, TypeVar
 import pysam
 
+SEQ_OR_STR = TypeVar("SEQ_OR_STR", str, Sequence[Any])
 GAP_CHAR = "-"
 
 def liftover(
@@ -104,6 +105,50 @@ def pretty_print_alignment(source: str, target: str, width = 50):
         print()
         print(f"target:\t{target[i:i+width]}")
         print()
+
+def _align_sequence(
+        source_seq: SEQ_OR_STR,
+        target_seq: SEQ_OR_STR,
+        lo_result: list[tuple[str, tuple[tuple[int, int, str], tuple[int, int, str]]]],
+        GAP: SEQ_OR_STR = GAP_CHAR
+)  -> tuple[list[SEQ_OR_STR], list[SEQ_OR_STR]]:
+    source_aligned = []
+    target_aligned = []
+    _, ((s_offset, _, _), (t_offset, _, _)) = lo_result[0]
+    # s_end_prev and t_end_prev stores the end coordinates of the previous
+    # iteration of the for loop, this to calculate the number of gaps in the
+    # alignment.
+    _, ((s_start, s_end_prev, _), (t_start, t_end_prev, _)) = lo_result[0]
+    source_aligned.append(source_seq[
+        s_start - s_offset: s_end_prev - s_offset
+    ])
+    target_aligned.append(target_seq[
+        t_start - t_offset: t_end_prev - t_offset
+    ])
+    for _, ((s_start, s_end, _), (t_start, t_end, _)) in lo_result[1:]:
+        # Add gaps
+        source_aligned.append(source_seq[
+            s_end_prev - s_offset: s_start - s_offset
+        ])
+        for _ in range(s_start - s_end_prev):
+            target_aligned.append(GAP)
+
+        target_aligned.append(target_seq[
+            t_end_prev - t_offset: t_start - t_offset
+        ])
+        for _ in range(t_start - t_end_prev):
+            source_aligned.append(GAP)
+
+        # Add aligned block
+        source_aligned.append(source_seq[
+            s_start - s_offset: s_end - s_offset
+        ])
+        target_aligned.append(target_seq[
+            t_start - t_offset: t_end - t_offset
+        ])
+        s_end_prev = s_end
+        t_end_prev = t_end
+    return source_aligned, target_aligned
 
 def get_alignment(
         chain_file: ChainFile,
@@ -240,40 +285,13 @@ def get_alignment(
             end = t_end_i,
             strand = t_strand
         )
-        # offset used to get relative indices in the loaded DNA sequences
-        s_offset = s_start_i
-        t_offset = t_start_i
-        # s_end_prev and t_end_prev stores the end coordinates of the previous
-        # iteration of the for loop, this to calculate the number of gaps in the
-        # alignment.
-        _, ((s_start, s_end_prev, _), (t_start, t_end_prev, _)) = result[0]
-        source_seq_aligned = source_seq[
-            s_start - s_offset: s_end_prev - s_offset
-        ]
-        target_seq_aligned = target_seq[
-            t_start - t_offset: t_end_prev - t_offset
-        ]
-        for _, ((s_start, s_end, _), (t_start, t_end, _)) in result[1:]:
-            # Add gaps
-            source_seq_aligned += source_seq[
-                s_end_prev - s_offset: s_start - s_offset
-            ]
-            target_seq_aligned += (s_start - s_end_prev) * GAP_CHAR
+        source_seq_aligned_, target_seq_aligned_ = _align_sequence(
+            source_seq, target_seq,
+            result, GAP_CHAR
+        )
 
-            target_seq_aligned += target_seq[
-                t_end_prev - t_offset: t_start - t_offset
-            ]
-            source_seq_aligned += (t_start - t_end_prev) * GAP_CHAR
-
-            # Add aligned block
-            source_seq_aligned += source_seq[
-                s_start - s_offset: s_end - s_offset
-            ]
-            target_seq_aligned += target_seq[
-                t_start - t_offset: t_end - t_offset
-            ]
-            s_end_prev = s_end
-            t_end_prev = t_end
+        source_seq_aligned = "".join(source_seq_aligned_)
+        target_seq_aligned = "".join(target_seq_aligned_)
 
         assert source_seq_aligned.replace(GAP_CHAR, "") == source_seq, "Aligned sequence does not macth source sequence..."
 
