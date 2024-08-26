@@ -149,7 +149,7 @@ class Chain:
                     t_start = t_start + (start - s_start) + 1 # values are 0-based
                     s_start = start
 
-            elif i == len(overlaps) - 1:
+            if i == len(overlaps) - 1:
                 if s_end > end:
                     t_end = t_end - (s_end - end)
                     s_end = end
