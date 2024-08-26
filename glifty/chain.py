@@ -145,7 +145,7 @@ class Chain:
             # the start in the chain file might be upstream of the query start
             # similarly the end might be downstrean of the query end
             if i == 0:
-                t_start = t_start + (start - s_start)
+                t_start = t_start + (start - s_start) + 1 # values are 0-based
                 s_start = start
 
             elif i == len(overlaps) - 1:
