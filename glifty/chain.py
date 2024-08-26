@@ -146,7 +146,7 @@ class Chain:
             # similarly the end might be downstrean of the query end
             if i == 0:
                 if s_start < start:
-                    t_start = t_start + (start - s_start) + 1 # values are 0-based
+                    t_start = t_start + (start - s_start)
                     s_start = start
 
             if i == len(overlaps) - 1:
